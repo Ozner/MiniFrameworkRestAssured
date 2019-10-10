@@ -94,7 +94,7 @@ public class BaseRestAssuredTest {
 	 * @return reqSpec
 	 */
 	public RequestSpecification initReqSpec() {
-		RequestSpecification reqSpec = new RequestSpecBuilder().setAccept(ContentType.JSON).build();
+		RequestSpecification reqSpec = new RequestSpecBuilder().setAccept(ContentType.JSON).build();	
 		this.setReqSpec(reqSpec);
 		return reqSpec;
 	}
@@ -121,12 +121,11 @@ public class BaseRestAssuredTest {
 	
 	/**
 	 * Add a query param to the request spec passed as a parameter
-	 * @param reqSpec
 	 * @param String key: the query param's key's name
 	 * @param String value: the query param's value
 	 */
-	public static void  addQueryParam(RequestSpecification reqSpec, String key, String value) {
-		reqSpec.queryParams(key, value);    
+	public void  addQueryParam(String key, String value) {
+		this.reqSpec.queryParams(key, value);    
 	}
 	
 	/**
@@ -149,30 +148,8 @@ public class BaseRestAssuredTest {
 	}
 	
 	/**
-	 * Generic HTTPT request
-	 * @param RequestSpecification reqSpec 
-	 * @param ResponseSpecification resSpec
-	 * @param String endpoint
-	 * @return
-	 */
-	public Response getOperation(RequestSpecification reqSpec, ResponseSpecification resSpec, String endpoint) {
-		Response response = 
-				given()
-				.spec(reqSpec)
-				.log().all()
-				.when()
-				.get(endpoint)
-				.then()
-				.log().body()
-				.spec(resSpec)
-				.and()
-				.extract()
-				.response();
-
-		return response;
-	}
-	
-	
+	 * Generic HTTP GET request
+	*/
 	public Response getOperation() {
 		Response response = 
 				given()
@@ -190,71 +167,63 @@ public class BaseRestAssuredTest {
 		return response;
 	}
 	
+	
 	/**
 	 * Generic HTTP POST request
-	 * @param RequestSpecification reqSpec 
-	 * @param ResponseSpecification resSpec
-	 * @param String endpoint
-	 * @return
-	 */
-	public Response postOperation(RequestSpecification reqSpec, ResponseSpecification resSpec, String endpoint) {
+	*/
+	public Response postOperation() {
 		Response response = 
 				given()
-				.spec(reqSpec)
-				.log().all()
+				.spec(this.getReqSpec())
+				.log().body()
 				.when()
-				.post(endpoint)
+				.post(this.endpoint)
 				.then()
 				.log().body()
-				.spec(resSpec)
+				.spec(this.getResSpec())
 				.and()
 				.extract()
 				.response();
 
 		return response;
 	}
-
+	
+	
 	/**
 	 * Generic HTTP PUT request
-	 * @param RequestSpecification reqSpec 
-	 * @param ResponseSpecification resSpec
-	 * @param String endpoint
-	 * @return
-	 */
-	public Response putOperation(RequestSpecification reqSpec, ResponseSpecification resSpec, String endpoint) {
+	*/
+	public Response putOperation() {
 		Response response = 
 				given()
-				.spec(reqSpec)
+				.spec(this.getReqSpec())
 				.log().all()
 				.when()
-				.put(endpoint)
+				.put(this.endpoint)
 				.then()
 				.log().body()
-				.spec(resSpec)
+				.spec(this.getResSpec())
 				.and()
 				.extract()
 				.response();
 
 		return response;
 	}
-
+	
+	
+	
 	/**
 	 * Generic HTTP DELETE request
-	 * @param RequestSpecification reqSpec 
-	 * @param ResponseSpecification resSpec
-	 * @param String endpoint
-	 * @return
-	 */
-	public Response deleteOperation(RequestSpecification reqSpec, ResponseSpecification resSpec, String endpoint) {
+	*/
+	public Response delteOperation() {
 		Response response = 
 				given()
-				.spec(reqSpec)
+				.spec(this.getReqSpec())
 				.log().all()
 				.when()
-				.delete(endpoint)
+				.delete(this.endpoint)
 				.then()
 				.log().body()
-				.spec(resSpec)
+				.spec(this.getResSpec())
 				.and()
 				.extract()
 				.response();
@@ -265,7 +234,7 @@ public class BaseRestAssuredTest {
 	/**
 	 * Return a jsonPath object from Rest Assured response passed as a parameter
 	 * @param r
-	 * @return
+	 * @return Response r
 	 */
 	public JsonPath getJsonPathFromResponse(Response r) {
 		return r.jsonPath();
@@ -275,7 +244,7 @@ public class BaseRestAssuredTest {
 	 * Return a String pathElment's value obtained from JsonPath 
 	 * @param r
 	 * @param pathElement
-	 * @return
+	 * @return String 
 	 */
 	public String getStringfromJsonPath(Response r, String pathElement) {
 		return getJsonPathFromResponse(r).getString(pathElement);
