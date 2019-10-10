@@ -5,8 +5,5 @@ import com.empresa.framework.*;
 
 public class GoogleApiTest {
 	
-	@Test
-	public void getBooks() {
-		
-	}
+
 }

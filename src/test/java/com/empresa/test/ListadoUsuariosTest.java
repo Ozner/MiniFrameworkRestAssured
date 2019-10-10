@@ -17,6 +17,8 @@ import org.junit.jupiter.api.Test;
 
 import com.empresa.framework.BaseRestAssuredTest;
 import com.empresa.framework.HelperMethods;
+
+import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 public class ListadoUsuariosTest {
@@ -26,69 +28,68 @@ public class ListadoUsuariosTest {
 	
 	@BeforeAll
 	public static void setup() {	
-		obj_propertie = HelperMethods.loadConfigPropertiesFile();
-		baseTest = new BaseRestAssuredTest(obj_propertie.getProperty("GET_LIST_USERS"));  
-		baseTest.getReqSpec().baseUri(obj_propertie.getProperty("BASE_HOST"));
-		baseTest.getReqSpec().basePath(obj_propertie.getProperty("BASE_PATH"));
+		obj_propertie = HelperMethods.loadConfigPropertiesFile();  
+		baseTest = new BaseRestAssuredTest(obj_propertie.getProperty("GET_LIST_USERS"));
+		baseTest.setBaseURI(obj_propertie.getProperty("BASE_HOST"));
+		baseTest.setBasePath(obj_propertie.getProperty("BASE_PATH"));
 	}	
 		
 	@Test
 	public void getUsersList() {
-		//set de req spec
+		//1- inicializar un request specification
+		baseTest.initReqSpec();
+		
+		//2- set de req spec
 		Map<String, Object> qParams = new HashMap< String,Object>();
 		qParams.put("page", new Integer(2));
 		qParams.put("per_page", new Integer(3));
 		
 		baseTest.addMultipleQueryParams(qParams);
-		//set response spec
+		
+		//3- inicializar un response specification
+		baseTest.initResSpec();
+		//4- set response spec
 		baseTest.getResSpec().body("data.id", contains(4, 5, 6));
 		baseTest.getResSpec().body("page", is(2));
 		baseTest.getResSpec().body("per_page", is(3));
 		
-		//ejecutar operacion
+		//5- ejecutar operacion 
 		baseTest.getOperation();
-		
-		/*given()
-			.log().all()
-			.spec(requestSpec)
-		.when()
-			.get(EndPoints.GET_LIST_USERS)
-		.then()
-			.log().body()
-			.body("data.id",  contains(4, 5, 6))
-			.body("page", is(2))
-			.body("per_page", is(3));
-			*/
 	}	
 	
 	/**	
-	 * Se puede devolver todo el response de la peticion y despues convertilo en json para hacer los assertion
+	 * Se puede devolver todo el response de la peticion y trabajar los assertion de JUnit o TestNG por separado
 	 */
 	@Test
 	public void getUsersListWithResponse() {
-		requestSpec = new RequestSpecBuilder().build();
-		requestSpec.queryParam("page", 2); 
-		requestSpec.queryParam("per_page");
+		//1- inicializar un request specification
+		baseTest.initReqSpec();
 		
-		Response response = 
+		//2- set de req spec
+		Map<String, Object> qParams = new HashMap< String,Object>();
+		qParams.put("page", new Integer(2));
+		qParams.put("per_page", new Integer(6));
+		baseTest.addMultipleQueryParams(qParams);
 		
-		given()
-			.log().all()
-			.spec(requestSpec)
-		.when()
-			.get(EndPoints.GET_LIST_USERS)
-		.then()
-			.log().body()
-			.extract().response();
+		//3- inicializar un response specification
+		baseTest.initResSpec();
+		//4- set response spec
+		baseTest.getResSpec().body("data.id", contains(7, 8, 9, 10, 11, 12));
+		baseTest.getResSpec().body("page", is(2));
+		baseTest.getResSpec().body("per_page", is(6));
 		
-		System.out.println(response.jsonPath().get("data.id"));
-		assertEquals(response.jsonPath().get("data.id"),  contains(4, 5, 6));
+		//5- ejecutar operacion 
+		Response response = baseTest.getOperation();
+		
+		assertEquals(baseTest.getStringfromJsonPath(response, "page"), "2");
 	}
 	
 
 	
 	@AfterAll
 	public static void teardown() {
-		System.out.println("BORRAR BASE DE DATOS");
+		baseTest.resetBaseURI();
+		baseTest.resetBasePath();
+		System.out.println("BORRAR BASE DE DATOS Y TODO LO QUE SE QUIERA RESETEAR");
 	}
 }

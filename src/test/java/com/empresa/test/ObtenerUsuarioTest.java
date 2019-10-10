@@ -28,23 +28,29 @@ public class ObtenerUsuarioTest {
 	public static void setup() {	
 		obj_propertie = HelperMethods.loadConfigPropertiesFile();
 		baseTest = new BaseRestAssuredTest(obj_propertie.getProperty("GET_USER_BY_ID"));  
-		baseTest.getReqSpec().baseUri(obj_propertie.getProperty("BASE_HOST"));
-		baseTest.getReqSpec().basePath(obj_propertie.getProperty("BASE_PATH"));
+		baseTest.setBaseURI(obj_propertie.getProperty("BASE_HOST"));
+		baseTest.setBasePath(obj_propertie.getProperty("BASE_PATH"));
 	}
 	
 	@Test
 	public void getUserById() {
-		//seteo del request spec
+		//1- inicializar request spec
+		baseTest.initReqSpec();
+		//2- seteo del request spec
 		baseTest.addPathParam("userId", "2");	
-		//seteo del response spec, o sea, que quiero probar
+		//3- inicializar response spec
+		baseTest.initResSpec();
+		//4- seteo del response spec, o sea, que quiero probar
 		baseTest.getResSpec().statusCode(200);
 		baseTest.getResSpec().body("data.id", is(2));
-		//ejecucion de la operacion
+		//5-ejecucion de la operacion
 		Response response = baseTest.getOperation();
 	}		
 	
 	@AfterAll
 	public static void teardown() {
-		System.out.println("BORRAR BASE DE DATOS");
+		baseTest.resetBaseURI();
+		baseTest.resetBasePath();
+		System.out.println("BORRAR BASE DE DATOS Y TODO LO QUE SE QUIERA RESETEAR");
 	}
 }

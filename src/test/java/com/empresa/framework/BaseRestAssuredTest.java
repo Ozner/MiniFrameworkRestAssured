@@ -3,6 +3,7 @@ package com.empresa.framework;
 import static io.restassured.RestAssured.given;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.http.Headers;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
@@ -52,8 +54,6 @@ public class BaseRestAssuredTest {
 	
 	//constructor 
 	public BaseRestAssuredTest(String endpoint) {
-		this.reqSpec = this.initReqSpec();
-		this.resSpec = this.initResSpec();
 		this.endpoint = endpoint;
 	}
 
@@ -61,38 +61,52 @@ public class BaseRestAssuredTest {
 	 * Load the base URI in to restassured's instance
 	 * @param baseURI
 	 */
-	public RestAssured setBaseURI (String baseURI){
-		System.out.println("LA URI BASE " + baseURI);
-		RestAssured r = new RestAssured();
-		r.baseURI = baseURI;
-			
-		return  r;
+	public void setBaseURI (String baseURI){
+		RestAssured.baseURI = baseURI;
 	}
 
 	/**
 	 * Reset the base URI (por si se necesita)
 	 */
-	public static void resetBaseURI (){
+	public void resetBaseURI (){
 		RestAssured.baseURI = null;
 	}
 	
 	/**
-	 * Generate and return a base request specificaction (only JSON format content type)
+	 * Load the basePath URI in to restassured's instance
+	 * @param baseURI
+	 */
+	public void setBasePath (String basePath){
+		RestAssured.basePath = basePath;
+	}
+	
+	
+	/**
+	 * Reset the basePath (por si se necesita)
+	 */
+	public void resetBasePath (){
+		RestAssured.basePath = null;
+	}
+	
+	/**
+	 * Generate and return a base request specification (only JSON format content type)
 	 * 
 	 * @return reqSpec
 	 */
 	public RequestSpecification initReqSpec() {
 		RequestSpecification reqSpec = new RequestSpecBuilder().setAccept(ContentType.JSON).build();
+		this.setReqSpec(reqSpec);
 		return reqSpec;
 	}
 	
 	/**
-	 * Generate and return a base response specificaction (only JSON format content type)
+	 * Generate and return a base response specification (only JSON format content type)
 	 * 
 	 * @return reqSpec
 	 */
 	public ResponseSpecification initResSpec() {
 		ResponseSpecification resSpec = new ResponseSpecBuilder().expectContentType(ContentType.JSON).build();
+		this.setResSpec(resSpec);
 		return resSpec;
 	}
 	
@@ -246,5 +260,36 @@ public class BaseRestAssuredTest {
 				.response();
 
 		return response;
+	}
+	
+	/**
+	 * Return a jsonPath object from Rest Assured response passed as a parameter
+	 * @param r
+	 * @return
+	 */
+	public JsonPath getJsonPathFromResponse(Response r) {
+		return r.jsonPath();
+	}
+	
+	/**
+	 * Return a String pathElment's value obtained from JsonPath 
+	 * @param r
+	 * @param pathElement
+	 * @return
+	 */
+	public String getStringfromJsonPath(Response r, String pathElement) {
+		return getJsonPathFromResponse(r).getString(pathElement);
+	}
+	
+	
+	/**
+	 * Return a List<String> pathElment's value obtained from JsonPath 
+	 * @param r
+	 * @param pathElement
+	 * @return
+	 */
+	public List<String> getListfromJsonPath(Response r, List<String> pathElement) {
+		//TODO
+		return null;
 	}
 }
