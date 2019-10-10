@@ -1,0 +1,2 @@
+# MiniFrameworkRestAssured
+Una clase base con prestaciones basicas para poder armar tus test con Rest Assured usando poco código, permite que solo te tengas que concentrar en los datos que se envian en la peticion y que datos esperas obtener en la respuesta usando objetos de las clases RequestSpecification y ResponseSpecification. Es solo una idea basica pero efectiva, luego puede usar todo Rest Assured a su antojo.
